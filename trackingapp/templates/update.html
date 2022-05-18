@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}
+    Edit Item Page
+{% endblock %}
+
+{% block content %}
+    <body class="text-center">
+        <div class="container">
+            <form method="POST" class="form-register" style="color:white">
+                {{ update_form.hidden_tag() }}
+                <img class="mb-4"
+                     src="https://lh3.googleusercontent.com/a-/AOh14GhB4t3jJRhjuMPjCL2DdeDKIeOe5sJ-WWtFbz2n=s288-p-rw-no">
+                <h1 class="h3 mb-3 font-weight-normal">
+                    If a new item has arrived, add it to the inventory here:
+                </h1>
+                {{ update_form.name.label() }}
+                {{ update_form.name(class="form-control:", placeholder="Name") }}
+                <br>
+                {{ update_form.price.label() }}
+                {{ update_form.price(class="form-control:", placeholder="Price") }}
+                <br>
+                {{ update_form.description.label() }}
+                {{ update_form.description(class="form-control:", placeholder="Description") }}
+                <br>
+                {{ update_form.submit(class="btn-lg btn-block btn-primary") }}
+            </form>
+        </div>
+    </body>
+{% endblock %}
