@@ -3,19 +3,17 @@ from trackingapp import db, app
 
 class Item(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
-    name = db.Column(db.String(length=30), nullable=False, unique=True)
+    name = db.Column(db.String(length=30), nullable=False)
     price = db.Column(db.Integer(), nullable=False)
-    description = db.Column(db.String(length=1024), nullable=False, unique=True)
+    description = db.Column(db.String(length=1024), nullable=False)
     quantity = db.Column(db.Integer(), nullable=False, default=5)
-    shipping = db.Column(db.Integer(), nullable=False, default=0)
-
-    # ^ 0 means not being shipped, 1 means it is being shipped
-
-    def __repr__(self):
-        return f'Item {self.name}'
+    shipping = db.relationship('Shipment', backref='item')
 
 
-# identifies each item by name instead of id number
+class Shipment(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    item_id = db.Column(db.Integer(), db.ForeignKey('item.id'), nullable=False)
+
 
 with app.app_context():
     db.create_all()

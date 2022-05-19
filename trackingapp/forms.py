@@ -10,6 +10,11 @@ class AddItemForm(FlaskForm):
     submit = SubmitField(label='Add Item to Database')
 
 
+class AddShipmentForm(FlaskForm):
+    item = StringField(label='Item Name:', validators=[DataRequired()])
+    submit = SubmitField(label='Add to Shipment')
+
+
 class DeleteForm(FlaskForm):
     submit = SubmitField(label='Delete Item')
 
@@ -21,8 +26,8 @@ class UpdateForm(FlaskForm):
     submit = SubmitField(label='Edit Item')
 
 
-class ShipForm(FlaskForm):
-    submit = SubmitField(label='Add Item to Shipment')
+class EditPageForm(FlaskForm):
+    submit = SubmitField(label='Edit Item')
 
 
 class DockForm(FlaskForm):

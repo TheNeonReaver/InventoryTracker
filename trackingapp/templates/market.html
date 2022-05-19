@@ -13,7 +13,6 @@
                 <thead>
                     <tr>
                         <!-- Your Columns HERE -->
-                        <th scope="col">ID</th>
                         <th scope="col">Name</th>
                         <th scope="col">Price</th>
                         <th scope="col">Quantity</th>
@@ -25,19 +24,23 @@
                     {% for item in items %}
                     {% include 'includes/items_modals.html' %}
                         <tr>
-                            <td>{{ item.id }}</td>
                             <td>{{ item.name }}</td>
                             <td>${{ item.price }}</td>
                             <td>{{ item.quantity }}</td>
                             <td>
                                 <button class="btn btn-outline btn-info" data-toggle="modal"
                                         data-target="#Modal-MoreInfo-{{ item.id }}">More Info</button>
+                                <br>
                                 <button class="btn btn-outline btn-success" data-toggle="modal"
                                         data-target="#Modal-ShipConfirm-{{ item.id }}">Add to Shipment</button>
-                                <button class="btn btn-outline btn-success" data-toggle="modal"
-                                        data-target="#Modal-UpdateConfirm-{{ item.id }}">Edit This Item</button>
-                                <button class="btn btn-outline btn-danger">Delete Item</button>
-
+                                <br>
+                                <form method="GET" action="/edit_item">
+                                    {{ edit_form.hidden_tag() }}
+                                    <input id="updated_item" name="updated_item" type="hidden" value="{{item.name}}">
+                                    {{ edit_form.submit(class="btn btn-outline-success") }}
+                                </form>
+                                <button class="btn btn-outline btn-danger" data-toggle="modal"
+                                        data-target="#Modal-DeleteConfirm-{{ item.id }}">Delete Item</button>
 
                             </td>
                         </tr>

@@ -1,7 +1,7 @@
 from trackingapp import app, db
 from flask import render_template, redirect, url_for, flash, request
-from trackingapp.models import Item
-from trackingapp.forms import AddItemForm, ShipForm, DockForm, DeleteForm, UpdateForm
+from trackingapp.models import Item, Shipment
+from trackingapp.forms import AddItemForm, DockForm, DeleteForm, UpdateForm, EditPageForm, AddShipmentForm
 
 
 @app.route('/')
@@ -12,46 +12,37 @@ def home_page():
 
 @app.route('/inventory', methods=['GET', 'POST'])
 def inventory_page():
-    ship_form = ShipForm()
+    ship_form = AddShipmentForm()
     dock_form = DockForm()
     delete_form = DeleteForm()
-    update_form = UpdateForm()
-
-    if update_form.validate_on_submit():
-        return redirect(url_for('inventory_page'))
+    edit_form = EditPageForm()
 
     if request.method == "POST":
         # adding item to shipment logic
         shipping_item = request.form.get('shipping_item')
         s_item_object = Item.query.filter_by(name=shipping_item).first()
-        s_item_ship = Item.query.filter_by(shipping=shipping_item).first()
         if s_item_object:
-            s_item_ship = 1
             flash(f"You have assigned {s_item_object.name} for shipment!", category='success')
 
         # delete item logic
         if delete_form.validate_on_submit():
-            item_to_delete = request.form.get('item_to_delete')
-            print("It's being pressed")
+            deleted_item = request.form.get('deleted_item')
+            d_item_object = Item.query.filter_by(name=deleted_item).first()
             flash(f"You have deleted this item!", category='success')
-            db.session.delete(item_to_delete)
+            db.session.delete(d_item_object)
             db.session.commit()
 
-        # sell item logic
+        # return item logic
         preshipped_item = request.form.get('preshipped_item')
         p_item_object = Item.query.filter_by(name=preshipped_item).first()
-        p_item_ship = Item.query.filter_by(shipping=preshipped_item).first()
         if p_item_object:
-            p_item_ship = 0
             flash(f"You have shelved {p_item_object.name}!", category='success')
 
         return redirect(url_for('inventory_page'))
 
     if request.method == "GET":
-        items = Item.query.filter_by(shipping=0)
-        preshipped_items = Item.query.filter_by(shipping=1)
-        return render_template('market.html', items=items, preshipped_items=preshipped_items, ship_form=ship_form,
-                               dock_form=dock_form, delete_form=delete_form, update_form=update_form)
+        return render_template('market.html', ship_form=ship_form,
+                               dock_form=dock_form, delete_form=delete_form, edit_form=edit_form)
 
 
 @app.route('/add_item', methods=['GET', 'POST'])
@@ -74,17 +65,23 @@ def add_page():
 
 @app.route('/edit_item', methods=['GET', 'POST'])
 def edit_page():
+    print(request.form)
     update_form = UpdateForm()
-    if update_form.validate_on_submit():
-        item_to_edit = Item(name=update_form.name.data,
-                            price=update_form.price.data,
-                            description=update_form.description.data)
-        db.session.update(item_to_edit)
+
+    updated_item = request.args.get('updated_item')
+    u_item_object = Item.query.filter_by(name=updated_item).first()
+
+    if request.method == "POST":
+        print("Just before name change")
+        setattr(u_item_object, 'name', update_form.name.data)
+        print("Just before price change")
+        setattr(u_item_object, 'price', update_form.price.data)
+        print("Just before desc. change")
+        setattr(u_item_object, 'description', update_form.description.data)
+        print("Just before commit")
         db.session.commit()
-        flash(f'You have successfully edited {item_to_edit.name}!', category='success')
+        print(u_item_object.price)
+        flash(f'You have successfully edited {u_item_object.name}!', category='success')
         return redirect(url_for('inventory_page'))
-    if update_form.errors != {}:  # if there are no errors from validations
-        for err_msg in update_form.errors.values():
-            flash(f'There was an error with editing this item: {err_msg}', category='danger')
 
     return render_template('update.html', update_form=update_form)
